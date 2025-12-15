@@ -31,24 +31,34 @@ with st.container():
     city = st.text_input("City", "Delhi")
 
     try:
-        url = f"https://wttr.in/{city}?format=j1"
-        data = requests.get(url, timeout=5).json()
+        geo = requests.get(
+            f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1",
+            timeout=5
+        ).json()
 
-        current = data["current_condition"][0]
-        temp = current["temp_C"]
-        humidity = current["humidity"]
-        desc = current["weatherDesc"][0]["value"]
-        wind_speed = current["windspeedKmph"]
+        if "results" in geo and len(geo["results"]) > 0:
+            lat = geo["results"][0]["latitude"]
+            lon = geo["results"][0]["longitude"]
 
-        st.success(
-            f"🌡 Temperature: {temp} °C | "
-            f"💧 Humidity: {humidity}% | "
-            f"💨 Wind: {wind_speed} km/h | "
-            f"🌥 {desc}"
-        )
+            weather_data = requests.get(
+                f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true",
+                timeout=5
+            ).json()
+
+            current = weather_data.get("current_weather", None)
+            if current:
+                st.success(
+                    f"🌡 {current['temperature']} °C | "
+                    f"💨 Wind: {current['windspeed']} m/s | "
+                    f"🧭 Direction: {current['winddirection']}°"
+                )
+            else:
+                st.warning("Weather data unavailable")
+        else:
+            st.warning("City not found")
     except Exception as e:
-        st.warning("Weather unavailable ❌")
-        st.write(f"Error: {e}")
+        st.warning(f"Weather unavailable ({e})")
+
 
 
 # -------------------------
