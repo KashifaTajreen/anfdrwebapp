@@ -24,7 +24,7 @@ st.title("🌱🥬 ANFDR – AI-Powered Nano Fertilizer Dosage Regulator 🌿�
 # --------------------------------------------------
 with st.container():
     st.markdown("""
-    <div style='background-color:#d9f1ff;padding:15px;border-radius:12px'>
+    <div style='background-color:#84C2FF;padding:15px;border-radius:12px'>
     <h3>🌦 Local Weather (Live)</h3>
     </div>
     """, unsafe_allow_html=True)
@@ -301,9 +301,12 @@ if st.button("📊 Generate Accuracy Graphs"):
     # -------------------------------
     rf = model.named_steps["model"]
 
+    trained_feature_count = len(rf.feature_importances_)
+    safe_feature_names = features[:trained_feature_count]
+
     importance = pd.Series(
         rf.feature_importances_,
-        index=features
+        index=safe_feature_names
     ).sort_values()
 
     fig2, ax2 = plt.subplots()
@@ -312,6 +315,3 @@ if st.button("📊 Generate Accuracy Graphs"):
     ax2.set_xlabel("Importance Score")
 
     st.pyplot(fig2)
-
-    st.success("Accuracy graphs generated successfully.")
-
