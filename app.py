@@ -73,43 +73,6 @@ with st.container():
 
 
 
-'''with st.container():
-    st.markdown("""
-    <div style='background-color:#8FB3E2;padding:15px;border-radius:12px'>
-    <h3>🌦 Local Weather (Live)</h3>
-    </div>
-    """, unsafe_allow_html=True)
-
-    city = st.text_input("City", "Bangalore")
-
-    try:
-        geo = requests.get(
-            f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1",
-            timeout=5
-        ).json()
-
-        if "results" in geo and len(geo["results"]) > 0:
-            lat = geo["results"][0]["latitude"]
-            lon = geo["results"][0]["longitude"]
-
-            weather_data = requests.get(
-                f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true",
-                timeout=5
-            ).json()
-
-            current = weather_data.get("current_weather", None)
-            if current:
-                st.success(
-                    f"🌡 {current['temperature']} °C | "
-                    f"💨 Wind: {current['windspeed']} km/h | "
-                    f"🧭 Direction: {current['winddirection']}°"
-                )
-            else:
-                st.warning("Weather data unavailable")
-        else:
-            st.warning("City not found")
-    except Exception as e:
-        st.warning(f"Weather unavailable ({e})")'''
 
 
 
@@ -181,15 +144,34 @@ def train_model(df, path=MODEL_PATH):
     joblib.dump({"pipeline": pipe, "features": X.columns.tolist()}, path)
     return pipe
 
+
+# -------------------------
+# Load or Train Initial Model
+# -------------------------
+if os.path.exists(MODEL_PATH):
+    bundle = joblib.load(MODEL_PATH)
+    model = bundle["pipeline"]
+    features = bundle["features"]
+else:
+    synth_df = generate_synthetic_data()
+    model = train_model(synth_df)
+    features = synth_df.drop(columns=["nano_amount_ml"]).columns.tolist()
+    bundle = joblib.load(MODEL_PATH)
+
+st.success(f"Model trained on synthetic data.")
+
 # --------------------------------------------------
-# MODEL EVALUATION: R², MAE & GRAPHS (PRESENTATION READY)
+# MODEL EVALUATION: R², MAE & GRAPHS (NO ERRORS)
 # --------------------------------------------------
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score, mean_absolute_error
 
+# 🔑 Explicitly load features from model bundle
+features = bundle["features"]
+
 st.subheader("📊 Model Performance Evaluation")
 
-# Recreate test split for evaluation
+# Use fresh synthetic data for evaluation
 data_eval = generate_synthetic_data(n=2000)
 
 X_eval = data_eval[features]
@@ -230,21 +212,6 @@ ax2.set_xlabel("Importance Score")
 
 st.pyplot(fig2)
 
-
-# -------------------------
-# Load or Train Initial Model
-# -------------------------
-if os.path.exists(MODEL_PATH):
-    bundle = joblib.load(MODEL_PATH)
-    model = bundle["pipeline"]
-    features = bundle["features"]
-else:
-    synth_df = generate_synthetic_data()
-    model = train_model(synth_df)
-    features = synth_df.drop(columns=["nano_amount_ml"]).columns.tolist()
-    bundle = joblib.load(MODEL_PATH)
-
-st.success(f"Model trained on synthetic data.")
 
 # -------------------------
 # Farmer Prediction Form
