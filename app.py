@@ -14,7 +14,7 @@ from sklearn.compose import ColumnTransformer
 
 st.set_page_config(page_title="ANFDR - Nano Fertilizer Recommender", layout="wide")
 
-st.title("🌱 ANFDR – AI Nano Fertilizer Dosage Regulator")
+st.title("🌱🥬 ANFDR – AI Nano Fertilizer Dosage Regulator 🌿🌾")
 
 # -------------------------
 # Local Weather Display
@@ -96,13 +96,14 @@ def generate_synthetic_data(n=4000, seed=42):
 
     # Conservative dose logic
     dose = (
-        0.3 +
-        0.4 * (df["deficiency_score"]/3) +
-        0.001 * (300 - df["npk_amount"]) +
-        0.05 * (6.5 - df["soil_ph"]).clip(0) -
-        0.002 * df["plant_age_days"]
-    )
-    dose = np.clip(dose, 0.1, 3.0)  # safe cap
+    0.25
+    + 0.5 * (df["deficiency_score"] / 3)          # deficiency impact
+    + 0.25 * (1 - (df["npk_amount"] / 300).clip(0, 1))  # ⬅ STRONG NPK EFFECT
+    + 0.08 * (6.5 - df["soil_ph"]).clip(0)
+    - 0.003 * df["plant_age_days"]
+)
+
+    dose = np.clip(dose, 0.05, 2.0) # safe cap
     df["nano_amount_ml"] = dose.round(3)
     return df
 
