@@ -243,3 +243,73 @@ st.download_button(
     file_name="synthetic_training_data.csv",
     mime="text/csv"
 )
+# ==================================================
+# 📊 MODEL ACCURACY & PERFORMANCE GRAPHS (OPTIONAL)
+# ==================================================
+st.divider()
+st.header("📈 Model Accuracy & Performance (For Presentation)")
+
+if st.button("📊 Generate Accuracy Graphs"):
+
+    from sklearn.metrics import r2_score, mean_absolute_error
+    import matplotlib.pyplot as plt
+
+    try:
+        # 1️⃣ Use fresh synthetic data ONLY for evaluation
+        eval_df = generate_synthetic_data(n=2000)
+
+        # 2️⃣ Ensure column compatibility (SAFE ALIGNMENT)
+        eval_df = eval_df.rename(columns={
+            "npk_kg_ha": "np_kg_ha",
+            "soil_moisture": "soil_moisture_pct"
+        })
+
+        # 3️⃣ Extract model inputs
+        X_eval = eval_df[features]
+        y_true = eval_df["nano_amount_ml"]
+
+        # 4️⃣ Predict
+        y_pred = model.predict(X_eval)
+
+        # 5️⃣ Metrics
+        r2 = r2_score(y_true, y_pred)
+        mae = mean_absolute_error(y_true, y_pred)
+
+        c1, c2 = st.columns(2)
+        c1.metric("R² Score", f"{r2:.3f}")
+        c2.metric("MAE (ml)", f"{mae:.3f}")
+
+        # -------------------------------
+        # GRAPH 1: Predicted vs Actual
+        # -------------------------------
+        fig1, ax1 = plt.subplots()
+        ax1.scatter(y_true, y_pred, alpha=0.4)
+        ax1.plot(
+            [y_true.min(), y_true.max()],
+            [y_true.min(), y_true.max()],
+            linestyle="--"
+        )
+        ax1.set_xlabel("Actual Nano Dosage (ml)")
+        ax1.set_ylabel("Predicted Nano Dosage (ml)")
+        ax1.set_title("Predicted vs Actual Nano Fertilizer Dosage")
+
+        st.pyplot(fig1)
+
+        # -------------------------------
+        # GRAPH 2: Feature Importance
+        # -------------------------------
+        importances = model.named_steps["model"].feature_importances_
+        importance_series = pd.Series(importances, index=features).sort_values()
+
+        fig2, ax2 = plt.subplots()
+        importance_series.plot(kind="barh", ax=ax2)
+        ax2.set_title("Feature Importance – Nano Fertilizer Dosage")
+        ax2.set_xlabel("Importance Score")
+
+        st.pyplot(fig2)
+
+        st.success("Graphs generated successfully.")
+
+    except Exception as e:
+        st.error("Unable to generate graphs. Please retrain the model once.")
+
