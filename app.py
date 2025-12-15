@@ -244,43 +244,64 @@ st.download_button(
     mime="text/csv"
 )
 # ==================================================
-# 📊 MODEL ACCURACY & PERFORMANCE GRAPHS (SAFE MODE)
+# 📊 MODEL ACCURACY & PERFORMANCE GRAPHS
 # ==================================================
 st.divider()
-st.header("📈 Model Accuracy & Performance")
+st.header("📈 Model Accuracy & Performance (For Presentation)")
 
 if st.button("📊 Generate Accuracy Graphs"):
 
     import matplotlib.pyplot as plt
     from sklearn.metrics import r2_score, mean_absolute_error
 
-    try:
-        # 1️⃣ Generate evaluation data
-        eval_df = generate_synthetic_data(n=2000)
+    # Generate evaluation data
+    eval_df = generate_synthetic_data(n=2000)
 
-        # 2️⃣ Get EXACT features expected by model
-        required_features = features.copy()
+    # Use exact model features
+    X_eval = eval_df[features]
+    y_true = eval_df["nano_amount_ml"]
 
-        # 3️⃣ Verify columns exist
-        missing_cols = [c for c in required_features if c not in eval_df.columns]
-        if missing_cols:
-            st.error(f"Evaluation failed. Missing columns: {missing_cols}")
-            st.stop()
+    # Predict
+    y_pred = model.predict(X_eval)
 
-        X_eval = eval_df[required_features]
-        y_true = eval_df["nano_amount_ml"]
+    # Metrics
+    r2 = r2_score(y_true, y_pred)
+    mae = mean_absolute_error(y_true, y_pred)
 
-        # 4️⃣ Predict
-        y_pred = model.predict(X_eval)
+    c1, c2 = st.columns(2)
+    c1.metric("R² Score", f"{r2:.3f}")
+    c2.metric("MAE (ml)", f"{mae:.3f}")
 
-        # 5️⃣ Metrics
-        r2 = r2_score(y_true, y_pred)
-        mae = mean_absolute_error(y_true, y_pred)
+    # -------------------------------
+    # GRAPH 1: Predicted vs Actual
+    # -------------------------------
+    fig1, ax1 = plt.subplots()
+    ax1.scatter(y_true, y_pred, alpha=0.4)
+    ax1.plot(
+        [y_true.min(), y_true.max()],
+        [y_true.min(), y_true.max()],
+        linestyle="--"
+    )
+    ax1.set_xlabel("Actual Nano Dosage (ml)")
+    ax1.set_ylabel("Predicted Nano Dosage (ml)")
+    ax1.set_title("Predicted vs Actual Nano Fertilizer Dosage")
 
-        c1, c2 = st.columns(2)
-        c1.metric("R² Score", f"{r2:.3f}")
-        c2.metric("MAE (ml)", f"{mae:.3f}")
+    st.pyplot(fig1)
 
-        # -------------------------------
-        # GRAPH 1: Predicted vs Actual
-        # ---------
+    # -------------------------------
+    # GRAPH 2: Feature Importance
+    # -------------------------------
+    rf = model.named_steps["model"]
+
+    importance = pd.Series(
+        rf.feature_importances_,
+        index=features
+    ).sort_values()
+
+    fig2, ax2 = plt.subplots()
+    importance.plot(kind="barh", ax=ax2)
+    ax2.set_title("Feature Importance – Nano Fertilizer Dosage")
+    ax2.set_xlabel("Importance Score")
+
+    st.pyplot(fig2)
+
