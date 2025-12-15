@@ -28,7 +28,7 @@ with st.container():
     </div>
     """, unsafe_allow_html=True)
 
-    city = st.text_input("City", "Delhi")
+    city = st.text_input("City", "Bangalore")
 
     try:
         geo = requests.get(
@@ -49,7 +49,7 @@ with st.container():
             if current:
                 st.success(
                     f"🌡 {current['temperature']} °C | "
-                    f"💨 Wind: {current['windspeed']} m/s | "
+                    f"💨 Wind: {current['windspeed']} km/h | "
                     f"🧭 Direction: {current['winddirection']}°"
                 )
             else:
