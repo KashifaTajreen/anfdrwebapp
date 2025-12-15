@@ -19,8 +19,7 @@ st.title("🌱 ANFDR – AI Nano Fertilizer Dosage Regulator")
 # -------------------------
 # Local Weather Display
 # -------------------------
-import requests
-import streamlit as st
+
 
 with st.container():
     st.markdown("""
@@ -51,43 +50,6 @@ with st.container():
         st.warning("Weather unavailable ❌")
         st.write(f"Error: {e}")
 
-'''with st.container():
-    st.markdown("""
-    <div style='background-color:#d9f1ff;padding:15px;border-radius:12px'>
-    <h3>🌦 Local Weather (Live)</h3>
-    </div>
-    """, unsafe_allow_html=True)
-
-    city = st.text_input("City", "Delhi")
-
-    try:
-        geo = requests.get(
-            f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1",
-            timeout=5
-        ).json()
-
-        if "results" in geo and len(geo["results"]) > 0:
-            lat = geo["results"][0]["latitude"]
-            lon = geo["results"][0]["longitude"]
-
-            weather_data = requests.get(
-                f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true",
-                timeout=5
-            ).json()
-
-            current = weather_data.get("current_weather", None)
-            if current:
-                st.success(
-                    f"🌡 {current['temperature']} °C | "
-                    f"💨 Wind: {current['windspeed']} m/s | "
-                    f"🧭 Direction: {current['winddirection']}°"
-                )
-            else:
-                st.warning("Weather data unavailable")
-        else:
-            st.warning("City not found")
-    except Exception as e:
-        st.warning(f"Weather unavailable ({e})")'''
 
 # -------------------------
 # Config & Constants
