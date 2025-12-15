@@ -19,9 +19,61 @@ st.title("🌱🥬 ANFDR – AI-Powered Nano Fertilizer Dosage Regulator 🌿�
 # -------------------------
 # Local Weather Display
 # -------------------------
-
-
+# --------------------------------------------------
+# WEATHER DISPLAY (TOP PANEL) – FIXED & ACCURATE
+# --------------------------------------------------
 with st.container():
+    st.markdown("""
+    <div style='background-color:#d9f1ff;padding:15px;border-radius:12px'>
+    <h3>🌦 Local Weather (Live)</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    city = st.text_input("City", "Delhi")
+
+    try:
+        # ---------- Geocoding ----------
+        geo = requests.get(
+            f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1",
+            timeout=5
+        ).json()
+
+        if "results" not in geo or len(geo["results"]) == 0:
+            st.warning("City not found")
+        else:
+            lat = geo["results"][0]["latitude"]
+            lon = geo["results"][0]["longitude"]
+
+            # ---------- Weather ----------
+            weather_resp = requests.get(
+                f"https://api.open-meteo.com/v1/forecast"
+                f"?latitude={lat}&longitude={lon}"
+                f"&current=temperature_2m,relative_humidity_2m,wind_speed_10m"
+                f"&timezone=auto",
+                timeout=5
+            ).json()
+
+            current = weather_resp.get("current", {})
+
+            temp_c = current.get("temperature_2m", "N/A")
+            humidity = current.get("relative_humidity_2m", "N/A")
+            wind_ms = current.get("wind_speed_10m", None)
+
+            # Convert wind m/s → km/h
+            wind_kmh = round(wind_ms * 3.6, 1) if wind_ms is not None else "N/A"
+
+            st.success(
+                f"🌡 {temp_c} °C | "
+                f"💧 {humidity} % | "
+                f"🌬 {wind_kmh} km/h"
+            )
+
+    except Exception as e:
+        st.warning("Weather data unavailable")
+
+
+
+'''with st.container():
     st.markdown("""
     <div style='background-color:#8FB3E2;padding:15px;border-radius:12px'>
     <h3>🌦 Local Weather (Live)</h3>
@@ -57,7 +109,7 @@ with st.container():
         else:
             st.warning("City not found")
     except Exception as e:
-        st.warning(f"Weather unavailable ({e})")
+        st.warning(f"Weather unavailable ({e})")'''
 
 
 
