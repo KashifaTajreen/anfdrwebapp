@@ -296,22 +296,4 @@ if st.button("📊 Generate Accuracy Graphs"):
 
     st.pyplot(fig1)
 
-    # -------------------------------
-    # GRAPH 2: Feature Importance
-    # -------------------------------
-    rf = model.named_steps["model"]
-
-    trained_feature_count = len(rf.feature_importances_)
-    safe_feature_names = features[:trained_feature_count]
-
-    importance = pd.Series(
-        rf.feature_importances_,
-        index=safe_feature_names
-    ).sort_values()
-
-    fig2, ax2 = plt.subplots()
-    importance.plot(kind="barh", ax=ax2)
-    ax2.set_title("Feature Importance – Nano Fertilizer Dosage")
-    ax2.set_xlabel("Importance Score")
-
-    st.pyplot(fig2)
+    
