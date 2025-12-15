@@ -142,7 +142,7 @@ else:
     features = synth_df.drop(columns=["nano_amount_ml"]).columns.tolist()
     bundle = joblib.load(MODEL_PATH)
 
-st.success(f"Model ready. Trained on synthetic data.")
+st.success(f"Model trained on synthetic data.")
 
 # -------------------------
 # Farmer Prediction Form
