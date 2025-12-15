@@ -71,11 +71,6 @@ with st.container():
     except Exception as e:
         st.warning("Weather data unavailable")
 
-
-
-
-
-
 # -------------------------
 # Config & Constants
 # -------------------------
@@ -160,57 +155,7 @@ else:
 
 st.success(f"Model trained on synthetic data.")
 
-# --------------------------------------------------
-# MODEL EVALUATION: R², MAE & GRAPHS (NO ERRORS)
-# --------------------------------------------------
-import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score, mean_absolute_error
 
-# 🔑 Explicitly load features from model bundle
-features = bundle["features"]
-
-st.subheader("📊 Model Performance Evaluation")
-
-# Use fresh synthetic data for evaluation
-data_eval = generate_synthetic_data(n=2000)
-
-X_eval = data_eval[features]
-y_true = data_eval["nano_amount_ml"]
-
-y_pred = pipe.predict(X_eval)
-
-# -------- METRICS --------
-r2 = r2_score(y_true, y_pred)
-mae = mean_absolute_error(y_true, y_pred)
-
-c1, c2 = st.columns(2)
-c1.metric("R² Score", f"{r2:.3f}")
-c2.metric("MAE (ml)", f"{mae:.3f}")
-
-# -------- GRAPH 1: PREDICTED vs ACTUAL --------
-fig1, ax1 = plt.subplots()
-ax1.scatter(y_true, y_pred, alpha=0.4)
-ax1.plot(
-    [y_true.min(), y_true.max()],
-    [y_true.min(), y_true.max()],
-    linestyle="--"
-)
-ax1.set_xlabel("Actual Nano Fertilizer Dose (ml)")
-ax1.set_ylabel("Predicted Nano Fertilizer Dose (ml)")
-ax1.set_title("Predicted vs Actual Nano Fertilizer Dosage")
-
-st.pyplot(fig1)
-
-# -------- GRAPH 2: FEATURE IMPORTANCE --------
-importances = pipe.named_steps["model"].feature_importances_
-importance_df = pd.Series(importances, index=features).sort_values()
-
-fig2, ax2 = plt.subplots()
-importance_df.plot(kind="barh", ax=ax2)
-ax2.set_title("Feature Importance – Nano Fertilizer Dosage")
-ax2.set_xlabel("Importance Score")
-
-st.pyplot(fig2)
 
 
 # -------------------------
