@@ -244,20 +244,39 @@ st.download_button(
     mime="text/csv"
 )
 # ==================================================
-# 📊 MODEL ACCURACY & PERFORMANCE GRAPHS
+# 📊 MODEL ACCURACY & PERFORMANCE GRAPHS (SAFE MODE)
 # ==================================================
 st.divider()
-st.header("📈 Model Accuracy & Performance (For Presentation)")
+st.header("📈 Model Accuracy & Performance")
 
 if st.button("📊 Generate Accuracy Graphs"):
 
     import matplotlib.pyplot as plt
     from sklearn.metrics import r2_score, mean_absolute_error
 
-    # Generate evaluation data
+    # Generate fresh synthetic evaluation data
     eval_df = generate_synthetic_data(n=2000)
 
-    # Use exact model features
+    # --------------------------------------------------
+    # 🔧 COLUMN COMPATIBILITY FIX (DO NOT REMOVE)
+    # --------------------------------------------------
+    column_map = {
+        "soil_moisture": "soil_moisture_pct",
+        "npk_amount": "np_kg_ha",
+        "npk_kg_ha": "np_kg_ha"
+    }
+
+    for src, tgt in column_map.items():
+        if src in eval_df.columns and tgt not in eval_df.columns:
+            eval_df[tgt] = eval_df[src]
+
+    # Ensure all required features exist
+    missing = [c for c in features if c not in eval_df.columns]
+    if missing:
+        st.error(f"Cannot generate graphs. Missing columns: {missing}")
+        st.stop()
+
+    # Evaluation data
     X_eval = eval_df[features]
     y_true = eval_df["nano_amount_ml"]
 
@@ -304,4 +323,6 @@ if st.button("📊 Generate Accuracy Graphs"):
     ax2.set_xlabel("Importance Score")
 
     st.pyplot(fig2)
+
+    st.success("Accuracy graphs generated successfully.")
 
