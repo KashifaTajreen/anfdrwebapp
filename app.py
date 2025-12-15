@@ -19,7 +19,39 @@ st.title("🌱 ANFDR – AI Nano Fertilizer Dosage Regulator")
 # -------------------------
 # Local Weather Display
 # -------------------------
+import requests
+import streamlit as st
+
 with st.container():
+    st.markdown("""
+    <div style='background-color:#d9f1ff;padding:15px;border-radius:12px'>
+    <h3>🌦 Local Weather (Live)</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    city = st.text_input("City", "Delhi")
+
+    try:
+        url = f"https://wttr.in/{city}?format=j1"
+        data = requests.get(url, timeout=5).json()
+
+        current = data["current_condition"][0]
+        temp = current["temp_C"]
+        humidity = current["humidity"]
+        desc = current["weatherDesc"][0]["value"]
+        wind_speed = current["windspeedKmph"]
+
+        st.success(
+            f"🌡 Temperature: {temp} °C | "
+            f"💧 Humidity: {humidity}% | "
+            f"💨 Wind: {wind_speed} km/h | "
+            f"🌥 {desc}"
+        )
+    except Exception as e:
+        st.warning("Weather unavailable ❌")
+        st.write(f"Error: {e}")
+
+'''with st.container():
     st.markdown("""
     <div style='background-color:#d9f1ff;padding:15px;border-radius:12px'>
     <h3>🌦 Local Weather (Live)</h3>
@@ -55,7 +87,7 @@ with st.container():
         else:
             st.warning("City not found")
     except Exception as e:
-        st.warning(f"Weather unavailable ({e})")
+        st.warning(f"Weather unavailable ({e})")'''
 
 # -------------------------
 # Config & Constants
