@@ -247,7 +247,7 @@ st.download_button(
 # 📊 MODEL ACCURACY & PERFORMANCE GRAPHS (FINAL SAFE)
 # ==================================================
 st.divider()
-st.header("📈 Model Accuracy & Performance (For Presentation)")
+st.header("📈 Model Accuracy & Performance")
 
 if st.button("📊 Generate Accuracy Graphs"):
 
@@ -283,17 +283,18 @@ if st.button("📊 Generate Accuracy Graphs"):
     # -------------------------------
     # GRAPH 1: Predicted vs Actual
     # -------------------------------
-    fig1, ax1 = plt.subplots()
-    ax1.scatter(y_true, y_pred, alpha=0.4)
+    fig1, ax1 = plt.subplots(figsize=(5, 4))  # 👈 smaller size
+    ax1.scatter(y_true, y_pred, alpha=0.4, s=18)
     ax1.plot(
-        [y_true.min(), y_true.max()],
-        [y_true.min(), y_true.max()],
-        linestyle="--"
+      [y_true.min(), y_true.max()],
+      [y_true.min(), y_true.max()],
+      linestyle="--"
     )
-    ax1.set_xlabel("Actual Nano Dosage (ml)")
-    ax1.set_ylabel("Predicted Nano Dosage (ml)")
-    ax1.set_title("Predicted vs Actual Nano Fertilizer Dosage")
+    ax1.set_xlabel("Actual (ml)")
+    ax1.set_ylabel("Predicted (ml)")
+    ax1.set_title("Predicted vs Actual Dosage")
 
-    st.pyplot(fig1)
+    st.pyplot(fig1, use_container_width=False)
+
 
     
