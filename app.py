@@ -23,7 +23,7 @@ st.title("🌱🥬 ANFDR – AI Nano Fertilizer Dosage Regulator 🌿🌾")
 
 with st.container():
     st.markdown("""
-    <div style='background-color:#d9f1ff;padding:15px;border-radius:12px'>
+    <div style='background-color:#8FB3E2;padding:15px;border-radius:12px'>
     <h3>🌦 Local Weather (Live)</h3>
     </div>
     """, unsafe_allow_html=True)
