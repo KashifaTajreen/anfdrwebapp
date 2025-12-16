@@ -249,7 +249,7 @@ st.download_button(
 st.divider()
 st.header("Model Accuracy & Performance")
 
-if st.button("R2 and MAE values")
+if st.button(":R2 and MAE values")
 
     import matplotlib.pyplot as plt
     from sklearn.metrics import r2_score, mean_absolute_error
