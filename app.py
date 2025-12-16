@@ -14,7 +14,7 @@ from sklearn.compose import ColumnTransformer
 
 st.set_page_config(page_title="ANFDR - Nano Fertilizer Recommender", layout="wide")
 
-st.title("🌱🥬 ANFDR – AI-Powered Nano Fertilizer Dosage Regulator 🌿🌾")
+st.title("🌱 ANFDR – AI-Powered Nano Fertilizer Dosage Regulator 🌾")
 
 # -------------------------
 # Local Weather Display
