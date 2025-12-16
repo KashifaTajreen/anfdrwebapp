@@ -247,9 +247,9 @@ st.download_button(
 # 📊 MODEL ACCURACY & PERFORMANCE GRAPHS (FINAL SAFE)
 # ==================================================
 st.divider()
-st.header("📈 Model Accuracy & Performance")
+st.header("Model Accuracy & Performance")
 
-if st.button("📊 Generate Accuracy Graphs"):
+if st.button("📊 ":R2 and MAE values"
 
     import matplotlib.pyplot as plt
     from sklearn.metrics import r2_score, mean_absolute_error
@@ -280,21 +280,6 @@ if st.button("📊 Generate Accuracy Graphs"):
     c1.metric("R² Score", f"{r2:.3f}")
     c2.metric("MAE (ml)", f"{mae:.3f}")
 
-    # -------------------------------
-    # GRAPH 1: Predicted vs Actual
-    # -------------------------------
-    fig1, ax1 = plt.subplots(figsize=(5, 4))  # 👈 smaller size
-    ax1.scatter(y_true, y_pred, alpha=0.4, s=18)
-    ax1.plot(
-      [y_true.min(), y_true.max()],
-      [y_true.min(), y_true.max()],
-      linestyle="--"
-    )
-    ax1.set_xlabel("Actual (ml)")
-    ax1.set_ylabel("Predicted (ml)")
-    ax1.set_title("Predicted vs Actual Dosage")
-
-    st.pyplot(fig1, use_container_width=False)
-
+    
 
     
