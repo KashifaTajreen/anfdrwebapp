@@ -64,9 +64,9 @@ with st.container():
 
             st.success(
                 f"🌡 {temp_c} °C | "
-                f"💧 {humidity} % | "
-                f"🌬 {wind_kmh} km/h"
-            )
+                f"💧 {humidity} % | ")
+                #f"🌬 {wind_kmh} km/h"
+            
 
     except Exception as e:
         st.warning("Weather data unavailable")
